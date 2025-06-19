@@ -31,6 +31,7 @@ def load_image(filepath):
     entry_image.insert(0, filepath)
     show_image_preview(filepath)
     update_max_size_label(filepath)
+    update_message_length()
     validate_inputs()
 
 
@@ -64,8 +65,10 @@ def encode_gui():
     needed_bits = len(''.join(format(ord(i), '08b') for i in message + "##END##"))
 
     if needed_bits > max_bits:
-        messagebox.showwarning("Too Long!",
-                               f"Message too large for selected image!\nMax: {max_bits // 8} bytes\nNeeded: {needed_bits // 8} bytes")
+        messagebox.showwarning(
+            "Too Long!",
+            f"Message too large for selected image!\nMax: {max_bits // 8} bytes\nNeeded: {needed_bits // 8} bytes"
+        )
         return
 
     out_path = save_image()
@@ -95,6 +98,7 @@ def decode_gui():
         text_msg.insert(tk.END, message)
         messagebox.showinfo("Decoded", "Message successfully extracted.")
         status_label.config(text="Decoding completed!", foreground="green")
+        update_message_length()
         validate_inputs()
     except Exception as e:
         messagebox.showerror("Error", str(e))
@@ -103,15 +107,26 @@ def decode_gui():
 
 def clear_message():
     text_msg.delete("1.0", tk.END)
+    update_message_length()
     validate_inputs()
 
 
 def update_max_size_label(image_path):
     try:
         max_bytes = to_bin_length(image_path) // 8
-        max_size_var.set(f"Max message size: {max_bytes} bytes")
+        max_size_var.set(f"Max message size: {max_bytes} bytes (~{max_bytes} chars)")
     except Exception:
         max_size_var.set("Max message size: N/A")
+        current_length_var.set("")
+
+
+def update_message_length(*args):
+    message = text_msg.get("1.0", tk.END).rstrip('\n')
+    char_len = len(message)
+    
+    byte_len = len(''.join(format(ord(i), '08b') for i in message + "##END##")) // 8
+    current_length_var.set(f"Current message length: {char_len} chars, {byte_len} bytes")
+    validate_inputs()
 
 
 def validate_inputs(*args):
@@ -185,7 +200,11 @@ image_label.pack(fill="both", expand=True)
 
 max_size_var = tk.StringVar(value="Max message size: N/A")
 max_size_label = ttk.Label(container, textvariable=max_size_var)
-max_size_label.pack(anchor="w", pady=(0, 8))
+max_size_label.pack(anchor="w", pady=(0, 2))
+
+current_length_var = tk.StringVar(value="")
+current_length_label = ttk.Label(container, textvariable=current_length_var, foreground="gray")
+current_length_label.pack(anchor="w", pady=(0, 8))
 
 ttk.Label(container, text="Password (optional):").pack(anchor="w", pady=(12, 2))
 entry_password = ttk.Entry(container, show="*", width=35)
@@ -213,7 +232,7 @@ btn_decode = ttk.Button(button_section, text="🕵️ Decode Message", command=d
 btn_decode.pack(fill="x")
 
 btn_clear = ttk.Button(button_section, text="Clear Message", command=clear_message)
-btn_clear.pack(fill="x", pady=(8,0))
+btn_clear.pack(fill="x", pady=(8, 0))
 
 status_label = ttk.Label(container, text="", foreground="green", font=("Segoe UI", 9))
 status_label.pack(fill="x", pady=(4, 0))
@@ -229,7 +248,7 @@ menubar.add_cascade(label="Help", menu=help_menu)
 root.config(menu=menubar)
 
 entry_image.bind("<KeyRelease>", validate_inputs)
-text_msg.bind("<KeyRelease>", validate_inputs)
+text_msg.bind("<KeyRelease>", update_message_length)
 
 validate_inputs()
 
