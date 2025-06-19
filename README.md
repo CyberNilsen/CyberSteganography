@@ -32,21 +32,21 @@ CyberSteganography is a Python-based steganography app that allows users to secu
 
 1. Clone this repository:
 
-   ```bash
+```bash
    git clone https://github.com/CyberNilsen/CyberSteganography.git
-   ```
+```
 
 2. Install dependencies:
 
-  ```bash
-  pip install -r requirements.txt
-  ```
+```bash
+pip install -r requirements.txt
+```
 
 3. Run the app:
 
-  ```bash
-  python main.py
-  ```
+```bash
+python main.py
+```
 
 ## 💡 Usage
 Launch the CyberSteganography app.
