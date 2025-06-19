@@ -38,15 +38,15 @@ CyberSteganography is a Python-based steganography app that allows users to secu
 
 2. Install dependencies:
 
-```bash
-pip install -r requirements.txt
-```
+  ```bash
+  pip install -r requirements.txt
+  ```
 
 3. Run the app:
 
-```bash
-python main.py
-```
+  ```bash
+  python main.py
+  ```
 
 ## 💡 Usage
 Launch the CyberSteganography app.
