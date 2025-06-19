@@ -61,7 +61,7 @@ Launch the CyberSteganography app.
 
 - Use the Clear Message button to reset the text area.
 
-📜 License
+## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
 
