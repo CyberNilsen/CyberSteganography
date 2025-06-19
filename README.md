@@ -2,7 +2,7 @@
 
 CyberSteganography is a Python-based steganography app that allows users to securely hide secret messages inside images. Developed by **CyberNilsen**, the app offers optional password encryption to protect your hidden data. Designed to be user-friendly with drag & drop support and real-time image previews. Currently supports PNG, BMP, JPG, and JPEG formats.
 
-![SteelSeriesGG_IXuld3nXeI](https://github.com/user-attachments/assets/769108c7-422a-47f2-8406-f047147b6c7c)
+![CyberSteganography Showcase](https://github.com/user-attachments/assets/769108c7-422a-47f2-8406-f047147b6c7c)
 
 ## 🚀 Features
 
@@ -66,4 +66,4 @@ Launch the CyberSteganography app.
 This project is licensed under the [MIT License](LICENSE).
 
 
-##⭐ If you find this project useful, please star the repo and share it with your friends!
+## ⭐ If you find this project useful, please star the repo and share it with your friends!
