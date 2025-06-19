@@ -123,7 +123,6 @@ def update_max_size_label(image_path):
 def update_message_length(*args):
     message = text_msg.get("1.0", tk.END).rstrip('\n')
     char_len = len(message)
-    
     byte_len = len(''.join(format(ord(i), '08b') for i in message + "##END##")) // 8
     current_length_var.set(f"Current message length: {char_len} chars, {byte_len} bytes")
     validate_inputs()
@@ -159,10 +158,18 @@ def show_about():
     messagebox.showinfo("About CyberSteganography", about_text)
 
 
+def center_window(win):
+    win.update_idletasks()
+    width = win.winfo_width()
+    height = win.winfo_height()
+    x = (win.winfo_screenwidth() // 2) - (width // 2)
+    y = (win.winfo_screenheight() // 2) - (height // 2)
+    win.geometry(f'{width}x{height}+{x}+{y}')
+
+
 root = TkApp()
 root.title("🕵️ CyberSteganography")
-root.geometry("800x850")
-root.minsize(670, 720)
+root.geometry("800x760") 
 root.configure(bg="#f5f7fa")
 
 style = ttk.Style()
@@ -174,7 +181,7 @@ container = ttk.Frame(root, padding=12)
 container.pack(fill="both", expand=True)
 
 frame_path = ttk.Frame(container)
-frame_path.pack(fill="x", pady=(0, 8))
+frame_path.pack(fill="x", pady=(0, 6))
 
 ttk.Label(frame_path, text="Image File:").grid(row=0, column=0, sticky="w")
 entry_image = ttk.Entry(frame_path, width=60)
@@ -206,15 +213,15 @@ current_length_var = tk.StringVar(value="")
 current_length_label = ttk.Label(container, textvariable=current_length_var, foreground="gray")
 current_length_label.pack(anchor="w", pady=(0, 8))
 
-ttk.Label(container, text="Password (optional):").pack(anchor="w", pady=(12, 2))
+ttk.Label(container, text="Password (optional):").pack(anchor="w", pady=(10, 2)) 
 entry_password = ttk.Entry(container, show="*", width=35)
 entry_password.pack(pady=4, anchor="w")
 
-ttk.Label(container, text="Message to Encode / Decoded Message:").pack(anchor="w", pady=(12, 2))
+ttk.Label(container, text="Message to Encode / Decoded Message:").pack(anchor="w", pady=(10, 2)) 
 text_frame = ttk.Frame(container)
 text_frame.pack(fill="both", expand=True, pady=4)
 
-text_msg = tk.Text(text_frame, height=10, wrap="word", font=("Segoe UI", 10))
+text_msg = tk.Text(text_frame, height=6, wrap="word", font=("Segoe UI", 10))
 text_msg.pack(side="left", fill="both", expand=True)
 
 scrollbar = ttk.Scrollbar(text_frame, orient="vertical", command=text_msg.yview)
@@ -223,22 +230,23 @@ scrollbar.pack(side="right", fill="y")
 text_msg.config(yscrollcommand=scrollbar.set)
 
 button_section = ttk.Frame(container)
-button_section.pack(pady=12, fill="x")
+button_section.pack(pady=0, fill="x")
 
 btn_encode = ttk.Button(button_section, text="🔐 Encode Message", command=encode_gui)
-btn_encode.pack(fill="x", pady=4)
+btn_encode.pack(fill="x", pady=3) 
 
 btn_decode = ttk.Button(button_section, text="🕵️ Decode Message", command=decode_gui)
 btn_decode.pack(fill="x")
 
 btn_clear = ttk.Button(button_section, text="Clear Message", command=clear_message)
-btn_clear.pack(fill="x", pady=(8, 0))
+btn_clear.pack(fill="x", pady=(4, 0))  
 
 status_label = ttk.Label(container, text="", foreground="green", font=("Segoe UI", 9))
-status_label.pack(fill="x", pady=(4, 0))
+status_label.pack(fill="x", pady=(0, 0))
 
-footer = ttk.Frame(root)
-footer.pack(side="bottom", fill="x", pady=8)
+footer = ttk.Frame(container)
+footer.pack(fill="x", pady=(0, 0))
+
 ttk.Label(footer, text="CyberSteganography © 2025 | by CyberNilsen", foreground="gray", anchor="center", font=("Segoe UI", 9)).pack()
 
 menubar = tk.Menu(root)
@@ -247,9 +255,9 @@ help_menu.add_command(label="About", command=show_about)
 menubar.add_cascade(label="Help", menu=help_menu)
 root.config(menu=menubar)
 
+text_msg.bind("<<Modified>>", update_message_length)
 entry_image.bind("<KeyRelease>", validate_inputs)
-text_msg.bind("<KeyRelease>", update_message_length)
+entry_password.bind("<KeyRelease>", validate_inputs)
 
-validate_inputs()
-
+center_window(root)
 root.mainloop()
