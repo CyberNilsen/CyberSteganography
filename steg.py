@@ -8,7 +8,6 @@ import base64
 
 
 def derive_key(password: str, salt: bytes) -> bytes:
-
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
@@ -46,9 +45,9 @@ def decrypt_message(encrypted: bytes, password: str) -> str:
         raise ValueError("Incorrect password or corrupted data")
 
 def to_bin(data):
-    
     if isinstance(data, str):
         data = data.encode()
+
     return ''.join(format(byte, '08b') for byte in data) + ''.join(format(ord(c), '08b') for c in "##END##")
 
 def encode_text(image_path, message, output_path, password=None):
@@ -72,16 +71,43 @@ def decode_text(image_path, password=None):
     img = Image.open(image_path)
     data = iter(img.getdata())
 
-    bits = ""
-    for pixel in data:
-        for value in pixel[:3]:
-            bits += str(value & 1)
-        if len(bits) >= 8 and bits[-64:].endswith("".join(format(ord(c), '08b') for c in "##END##")):
+    bits = []
+    end_marker = "##END##"
+    end_marker_bin = ''.join(format(ord(c), '08b') for c in end_marker)
+
+    while True:
+        try:
+            pixel = next(data)
+        except StopIteration:
             break
 
-    chars = [bits[i:i+8] for i in range(0, len(bits), 8)]
-    msg = ''.join([chr(int(b, 2)) for b in chars])
-    msg = msg.split("##END##")[0]
+        for val in pixel[:3]:
+            bits.append(str(val & 1))
+
+            if len(bits) >= len(end_marker_bin):
+                last_bits = bits[-len(end_marker_bin):]
+
+                chars = []
+                for i in range(0, len(last_bits), 8):
+                    byte = last_bits[i:i+8]
+                    chars.append(chr(int(''.join(byte), 2)))
+                if ''.join(chars) == end_marker:
+                    break
+        else:
+            continue 
+        break 
+
+    message_bits = bits[:-len(end_marker_bin)]
+    chars = []
+    for i in range(0, len(message_bits), 8):
+        byte = message_bits[i:i+8]
+        if len(byte) < 8:
+            break
+        chars.append(chr(int(''.join(byte), 2)))
+
+    msg = ''.join(chars)
+
     if password:
         msg = decrypt_message(msg.encode(), password)
+
     return msg
